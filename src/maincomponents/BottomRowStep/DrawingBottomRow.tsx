@@ -15,12 +15,11 @@ const BottomAbsoluteRow = styled.div`
   gap: 1rem;
 `;
 
-interface AloneBottomRowProps {
-	onCancelClick: () => void;
-	onDrawClick: () => void;
+interface DrawingBottomRowProps {
+	onGoFirstClick: () => void;
 }
 
-const AloneBottomRow: React.FC<AloneBottomRowProps> = ({ onCancelClick, onDrawClick }) => {
+const DrawingBottomRow: React.FC<DrawingBottomRowProps> = ({ onGoFirstClick }) => {
 	return (
 		<BottomAbsoluteRow>
 			<CustomButton
@@ -28,10 +27,10 @@ const AloneBottomRow: React.FC<AloneBottomRowProps> = ({ onCancelClick, onDrawCl
 				$width="10rem"
 				$height="auto"
 				$padding="0.5rem"
-				onClick={onCancelClick}
+				onClick={onGoFirstClick}
 			>
 				<CustomFont $color="white" $font="1rem">
-					혼자 그리기 취소
+					완료
 				</CustomFont>
 			</CustomButton>
 
@@ -40,14 +39,13 @@ const AloneBottomRow: React.FC<AloneBottomRowProps> = ({ onCancelClick, onDrawCl
 				$width="10rem"
 				$height="auto"
 				$padding="0.5rem"
-				onClick={onDrawClick}
 			>
 				<CustomFont $color="black" $font="1rem">
-					혼자 그리기 시작
+					멈춤/시작
 				</CustomFont>
 			</CustomButton>
 		</BottomAbsoluteRow>
 	);
 };
 
-export default AloneBottomRow;
+export default DrawingBottomRow;
