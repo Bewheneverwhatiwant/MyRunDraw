@@ -1,7 +1,7 @@
 import CustomColumn from "./components/CustomColumn"
 import CustomFont from "./components/CustomFont"
 import KakaoMap from "./components/KakaoMap/KakaoMap"
-import Loading from "./components/Lottie/component/Loading"
+import Loading from "./components/Lottie/Loading"
 
 function App() {
 
