@@ -3,6 +3,12 @@ import CustomFont from "./components/CustomFont"
 import KakaoMap from "./components/KakaoMap/KakaoMap"
 import Loading from "./components/Lottie/Loading"
 
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
+
 function App() {
 
   return (

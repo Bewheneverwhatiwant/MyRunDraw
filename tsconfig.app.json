@@ -25,6 +25,9 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src",
+    "src/**/*.ts", // 모든 TypeScript 파일 포함
+    "src/**/*.tsx", // 모든 TSX 파일 포함
+    "src/types/global.d.ts"
   ]
 }
