@@ -1,23 +1,32 @@
-import CustomColumn from "./components/CustomColumn"
-import CustomFont from "./components/CustomFont"
-import KakaoMap from "./components/KakaoMap/KakaoMap"
-import Loading from "./components/Lottie/Loading"
+import styled from "styled-components";
+import CustomColumn from "./components/CustomColumn";
 
-declare global {
-  interface Window {
-    kakao: any;
-  }
-}
+import TopRow from "./maincomponents/TopRow";
+import KakaoMap from "./components/KakaoMap/KakaoMap";
+import BottomRow from "./maincomponents/BottomRow";
+
+const Wrapper = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+`;
 
 function App() {
-
   return (
-    <CustomColumn $width="100%" $minHeight='100vh'>
-      <CustomFont $color='black' $font='1rem'>안뇽!</CustomFont>
-      <Loading />
-      <KakaoMap />
+    <CustomColumn
+      $width="100%"
+      $minHeight="100vh"
+      $gap="0"
+      $alignitems="center"
+      $justifycontent="flex-start"
+    >
+      <Wrapper>
+        <TopRow />
+        <KakaoMap />
+        <BottomRow />
+      </Wrapper>
     </CustomColumn>
-  )
+  );
 }
 
-export default App
+export default App;

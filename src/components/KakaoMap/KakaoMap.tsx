@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import MarkerData from '../../assets/markData.json';
 import { CgSpinner } from "react-icons/cg";
 
+declare global {
+	interface Window {
+		kakao: any;
+	}
+}
+
 interface Marker {
 	이름: string;  // 공공 체육시설 이름
 	위도: number;
@@ -148,7 +154,7 @@ const KakaoMap = () => {
 					<CgSpinner className="animate-spin w-[100px] h-[100px]" />
 				</div>
 			) : (
-				<div id="map" style={{ width: "100%", height: "90vh" }} />
+				<div id="map" style={{ width: "100%", height: "100vh" }} />
 			)}
 		</>
 	);
