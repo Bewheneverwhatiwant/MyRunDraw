@@ -21,7 +21,7 @@ function App() {
       $justifycontent="flex-start"
     >
       <Wrapper>
-        <TopRow />
+        {/* <TopRow /> 추적 시작, 추적 종료 버튼 테스트를 위해 잠시 주석 처리 */}
         <KakaoMap />
         <BottomRow />
       </Wrapper>

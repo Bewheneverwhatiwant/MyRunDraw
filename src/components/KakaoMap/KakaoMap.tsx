@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import MarkerData from '../../assets/markData.json';
 import { CgSpinner } from "react-icons/cg";
 
@@ -17,6 +17,11 @@ interface Marker {
 const KakaoMap = () => {
 	const [mapisLoading, setMapisLoading] = useState(true);
 	const markers: any[] = []; // 이 부분 경고 안나도록 하는 거 포기...
+
+	const mapRef = useRef<any>(null); // Kakao Map 참조 변수
+	const [isStart, setIsStart] = useState(false); // 추적 시작 여부
+	const [coordinates, setCoordinates] = useState<{ lat: number; lng: number }[]>([]);
+	const trackingInterval = useRef<ReturnType<typeof setInterval> | null>(null); // 타이머 참조값
 
 	useEffect(() => {
 		const loadKakaoMap = () => {
@@ -48,6 +53,7 @@ const KakaoMap = () => {
 			});
 		};
 
+
 		const initializeMap = async () => {
 			try {
 				await loadKakaoMap();
@@ -67,6 +73,7 @@ const KakaoMap = () => {
 					level: 3,
 				};
 				const map = new window.kakao.maps.Map(mapContainer, mapOption);
+				mapRef.current = map; // mapRef에 Kakao Map 객체 저장
 
 				const clusterer = new window.kakao.maps.MarkerClusterer({
 					map: map,  // 클러스터러가 관리할 지도
@@ -147,6 +154,76 @@ const KakaoMap = () => {
 		initializeMap();
 	}, []);
 
+	// 사용자로부터 10초마다 좌료를 수집하고, 좌표를 배열에 포함시켜서, 지도 위에 polyline을 그리기 위한 함수이다.
+	const collectUserLocation = async () => {
+		if (!navigator.geolocation) {
+			console.error("Geolocation을 지원하지 않는 브라우저입니다.");
+			return;
+		}
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				const { latitude, longitude } = position.coords;
+				const newCoordinate = { lat: latitude, lng: longitude };
+
+				setCoordinates((prevCoordinates) => [...prevCoordinates, newCoordinate]);
+				console.log("수집된 좌표:", newCoordinate);
+			},
+			(error) => console.error("위치 정보 가져오기 실패:", error)
+		);
+	};
+
+	// 배열에 저장된 사용자의 좌표들을 이어 polyline으로 그리는 함수
+	useEffect(() => {
+		if (!window.kakao || coordinates.length < 2) return;
+
+		const linePath = coordinates.map(
+			(coord) => new window.kakao.maps.LatLng(coord.lat, coord.lng)
+		);
+		const polyline = new window.kakao.maps.Polyline({
+			path: linePath,
+			strokeWeight: 5,
+			strokeColor: "#FF0000",
+			strokeOpacity: 0.7,
+			strokeStyle: "solid",
+		});
+
+		if (mapRef.current) {
+			polyline.setMap(mapRef.current); // mapRef.current 사용
+		}
+
+		return () => polyline.setMap(null); // 이전 Polyline 제거
+	}, [coordinates]);
+
+
+	const handleStartTracking = () => {
+		if (isStart) return;
+
+		setIsStart(true);
+		console.log("추적 시작");
+
+		trackingInterval.current = setInterval(() => {
+			collectUserLocation();
+		}, 10000);
+	};
+
+
+	const handleStopTracking = () => {
+		if (!isStart) return;
+
+		setIsStart(false);
+		console.log("추적 종료");
+
+		if (trackingInterval.current) {
+			clearInterval(trackingInterval.current);
+			trackingInterval.current = null;
+		}
+
+		// 좌표 초기화(원하면 아래 코드를 활성화)
+		// setCoordinates([]);
+	};
+
+
 	return (
 		<>
 			{mapisLoading ? (
@@ -154,7 +231,26 @@ const KakaoMap = () => {
 					<CgSpinner className="animate-spin w-[100px] h-[100px]" />
 				</div>
 			) : (
-				<div id="map" style={{ width: "100%", height: "100vh" }} />
+				<div id="map" style={{ width: "100%", height: "100vh", position: "relative" }}>
+					<div
+						className="absolute flex justify-center items-center space-x-4"
+						style={{
+							position: "absolute",
+							top: "50%",
+							left: "50%",
+							transform: "translate(-50%, -50%)",
+							zIndex: 10, // 버튼이 지도 위에 보이도록 설정 (잠시 !!)
+						}}
+					>
+						<button onClick={handleStartTracking} className="bg-green-500 text-white px-4 py-2 rounded">
+							추적 시작
+						</button>
+						<button onClick={handleStopTracking} className="bg-red-500 text-white px-4 py-2 rounded">
+							추적 종료
+						</button>
+					</div>
+				</div>
+
 			)}
 		</>
 	);
